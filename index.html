@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ЭССЕНІ ТАЛДАУ ЖӘНЕ БАҒАЛАУ ГЕНЕРАТОРЫ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Playfair Display for academic look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons for modern UI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Mammoth.js library to parse Word .docx documents in client-side JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .serif-title {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom scrollbar for premium feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Interactive pulse for active elements */
+        .glow-gold {
+            box-shadow: 0 0 15px rgba(217, 119, 6, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Навигациялық панель және тақырып бөлімі (Кәсіби көк түсті фон, Алтын түсті тақырып) -->
+    <header class="bg-blue-900 border-b border-blue-800 sticky top-0 z-40 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-amber-500 text-blue-950 p-2.5 rounded-xl shadow-md flex items-center justify-center">
+                    <i class="fa-solid fa-graduation-cap text-2xl animate-bounce"></i>
+                </div>
+                <div>
+                    <h1 class="serif-title text-xl sm:text-2xl font-bold text-amber-400 tracking-wide">ЭССЕНІ ТАЛДАУ ЖӘНЕ БАҒАЛАУ ГЕНЕРАТОРЫ</h1>
+                    <p class="text-xs text-blue-200 font-medium">30 жылдық тәжірибесі бар маманның эссе тексеру және бағыттаушы платформасы</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-850 text-blue-100 border border-blue-700/50">
+                    <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full mr-1.5 animate-pulse"></span>
+                    Белсенді жүйе
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Негізгі жұмыс алаңы мен бақылау тақтасы -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Сол жақ панель: Эссе жазу және баптаулар (lg:col-span-5) -->
+            <section class="lg:col-span-5 space-y-6">
+                <!-- Оқушы профилі және Ұстаз туралы ақпарат (Жылы алтын-сарғылт градиент) -->
+                <div class="bg-gradient-to-br from-amber-600 via-orange-600 to-red-700 text-white rounded-2xl p-6 shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 opacity-15">
+                        <i class="fa-solid fa-book-open text-9xl"></i>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="relative">
+                            <div class="w-14 h-14 rounded-full bg-amber-100 border-2 border-amber-400 flex items-center justify-center text-amber-950 font-bold text-xl shadow-inner">
+                                ЖН
+                            </div>
+                            <span class="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-amber-600 rounded-full"></span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-amber-100">Жазира Нұрбекқызы</h3>
+                            <p class="text-xs text-amber-200 italic">Қазақ тілі мен әдебиеті пәнінің жоғары санатты ұстазы</p>
+                            <p class="text-xs text-orange-100 mt-2 line-clamp-2">"Жазу – жанның айнасы. Әр баланың бойындағы талантты ашу, оның стилін ұштау – менің басты міндетім."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Эссе енгізу формасы мен параметрлері -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                        <h2 class="font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-pen-nib text-amber-600"></i>
+                            Эссе деректері
+                        </h2>
+                        <span class="text-xs text-slate-400 font-medium" id="word-count">Сөз саны: 0</span>
+                    </div>
+
+                    <!-- Тақырып таңдау / енгізу -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-slate-700">Эссе тақырыбы немесе бағыты:</label>
+                        <select id="essay-topic-select" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-800 focus:border-amber-500 focus:bg-white focus:outline-none transition-colors" onchange="handleTopicSelectChange()">
+                            <option value="custom">Жаңа тақырып енгізу...</option>
+                            <option value="topic1" selected>Ана тілі – ұлттық қазына (Орфографиялық, стильдік қателер көп нұсқа)</option>
+                            <option value="topic2">Абайдың қара сөздеріндегі адамгершілік мәселесі (Орташа деңгей)</option>
+                            <option value="topic3">Жасанды интеллекттің адамзатқа пайдасы мен зияны (Жақсы жазылған эссе)</option>
+                        </select>
+                        <input type="text" id="custom-topic-input" class="hidden w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:border-amber-500 focus:outline-none transition-colors" placeholder="Тақырыпты қолдан жазыңыз...">
+                    </div>
+
+                    <!-- Эссе мәтінін енгізу аймағы -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center flex-wrap gap-2">
+                            <label class="block text-sm font-semibold text-slate-700">Эссе мәтіні:</label>
+                            <div class="flex items-center gap-2">
+                                <!-- Оқушының жіберген жұмысын файлдан тез импорттау (Word және TXT) -->
+                                <input type="file" id="essay-file-input" accept=".txt,.docx" class="hidden" onchange="uploadEssayFile(event)">
+                                <button onclick="document.getElementById('essay-file-input').click()" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1 transition-colors bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg" title="Тәжірибелік Word (.docx) немесе .txt файлдарын жүктеу">
+                                    <i class="fa-solid fa-file-arrow-up"></i> Жұмысты жүктеу (.docx, .txt)
+                                </button>
+                                <button onclick="clearText()" class="text-xs text-red-500 hover:text-red-700 font-semibold flex items-center gap-1 transition-colors bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded-lg">
+                                    <i class="fa-solid fa-trash-can"></i> Тазалау
+                                </button>
+                            </div>
+                        </div>
+                        <textarea id="essay-text-input" rows="12" class="w-full rounded-xl border border-slate-300 p-4 text-sm focus:border-amber-500 focus:outline-none transition-colors leading-relaxed" placeholder="Оқушының эссе мәтінін осы жерге енгізіңіз немесе дайын үлгілердің бірін таңдаңыз..."></textarea>
+                    </div>
+
+                    <!-- Бағалау критерийлерін баптау бөлімі -->
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/60 space-y-3">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-sliders text-slate-400"></i>
+                            Бағалау параметрлері
+                        </h4>
+                        <div class="grid grid-cols-2 gap-3 text-xs font-semibold text-slate-700">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="crit-structure" checked class="rounded text-amber-600 focus:ring-amber-500">
+                                Құрылымы (Кіріспе/Негізгі/Қор.)
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="crit-arguments" checked class="rounded text-amber-600 focus:ring-amber-500">
+                                Дәлелдемелер/Аргумент
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="crit-style" checked class="rounded text-amber-600 focus:ring-amber-500">
+                                Стилистикалық қателер
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="crit-grammar" checked class="rounded text-amber-600 focus:ring-amber-500">
+                                Грамоталық (Орф/Пунк)
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Тексеру батырмасы -->
+                    <button id="evaluate-btn" onclick="runAnalysis()" class="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transform active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                        Эссені Тексеру және Бағалау
+                    </button>
+                </div>
+            </section>
+
+            <!-- Оң жақ панель: Тексеріс нәтижесі (lg:col-span-7) -->
+            <section class="lg:col-span-7">
+                <!-- Бастапқы күй: Эссе тексерілмеген кездегі бос орын -->
+                <div id="result-placeholder" class="bg-white border border-slate-200 rounded-2xl p-12 text-center h-full flex flex-col justify-center items-center space-y-4 shadow-sm">
+                    <div class="w-20 h-20 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 mb-2">
+                        <i class="fa-solid fa-file-signature text-3xl animate-pulse"></i>
+                    </div>
+                    <h3 class="serif-title text-2xl font-bold text-slate-800">Талдау нәтижесі осы жерде көрсетіледі</h3>
+                    <p class="text-slate-500 text-sm max-w-md mx-auto">
+                        Сол жақтағы оқушының жазған жұмысын таңдаңыз немесе өзіңіздің мәтініңізді қойып, <strong>«Эссені Тексеру»</strong> батырмасын басыңыз. Шебер ұстаз жұмысты толық талдап, ақыл-кеңестерін ұсынады.
+                    </p>
+                    <div class="pt-4 flex gap-2">
+                        <span class="inline-flex items-center text-xs font-semibold px-3 py-1 bg-amber-50 text-amber-800 rounded-full border border-amber-200">
+                            <i class="fa-solid fa-check mr-1"></i> Стилистика
+                        </span>
+                        <span class="inline-flex items-center text-xs font-semibold px-3 py-1 bg-amber-50 text-amber-800 rounded-full border border-amber-200">
+                            <i class="fa-solid fa-check mr-1"></i> Грамматика
+                        </span>
+                        <span class="inline-flex items-center text-xs font-semibold px-3 py-1 bg-amber-50 text-amber-800 rounded-full border border-amber-200">
+                            <i class="fa-solid fa-check mr-1"></i> 5 Критерий
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Жүктелу күйі (Loading Screen) -->
+                <div id="result-loading" class="hidden bg-white border border-slate-200 rounded-2xl p-12 text-center h-full flex flex-col justify-center items-center space-y-6 shadow-sm">
+                    <div class="relative w-24 h-24">
+                        <!-- Outer rotating circle -->
+                        <div class="absolute inset-0 rounded-full border-4 border-slate-100 border-t-amber-600 animate-spin"></div>
+                        <!-- Inner avatar display -->
+                        <div class="absolute inset-2 bg-amber-50 rounded-full flex items-center justify-center text-amber-700">
+                            <i class="fa-solid fa-chalkboard-user text-3xl animate-bounce"></i>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="font-bold text-slate-800 text-lg">Шебер ұстаз эссені оқып жатыр...</h3>
+                        <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider" id="loading-status">Қазір бастаймыз...</p>
+                    </div>
+                    <!-- Тірідей өзгеретін процесс қадамдары -->
+                    <div class="w-full max-w-xs space-y-2 text-left">
+                        <div class="flex items-center gap-2 text-xs" id="step-1">
+                            <i class="fa-solid fa-circle-notch text-slate-300" id="step-1-icon"></i>
+                            <span class="text-slate-500" id="step-1-text">Мәтінді оқу және стилін зерттеу</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs" id="step-2">
+                            <i class="fa-solid fa-circle-notch text-slate-300" id="step-2-icon"></i>
+                            <span class="text-slate-500" id="step-2-text">Стилистикалық және орфографиялық қателерді анықтау</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs" id="step-3">
+                            <i class="fa-solid fa-circle-notch text-slate-300" id="step-3-icon"></i>
+                            <span class="text-slate-500" id="step-3-text">Бағалау критерийлері бойынша есептеу</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs" id="step-4">
+                            <i class="fa-solid fa-circle-notch text-slate-300" id="step-4-icon"></i>
+                            <span class="text-slate-500" id="step-4-text">Педагогикалық жылы ақыл-кеңесті қалыптастыру</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Тексеріс нәтижесін көрсететін басты контейнер -->
+                <div id="result-display" class="hidden space-y-6">
+                    
+                    <!-- Негізгі көрсеткіштер (Ұпай және жылдам шолу) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <!-- Жалпы балл -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Жалпы Ұпай</p>
+                                <h4 class="serif-title text-4xl font-extrabold text-slate-900 mt-1" id="badge-score">85<span class="text-base text-slate-400 font-normal">/100</span></h4>
+                            </div>
+                            <div class="w-14 h-14 rounded-full border-4 border-amber-500 flex items-center justify-center font-bold text-lg text-slate-900 bg-amber-50" id="badge-score-ring">
+                                A-
+                            </div>
+                        </div>
+
+                        <!-- Қателер саны -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Қателер Саны</p>
+                                <h4 class="serif-title text-4xl font-extrabold text-rose-600 mt-1" id="badge-errors">7</h4>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                        </div>
+
+                        <!-- Әрекеттер мен Кері байланыс (Тыңдау, Көшіру, Жүктеп алу) -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between relative overflow-hidden">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Әрекеттер және Кері байланыс</p>
+                            <div class="flex flex-col gap-2 mt-2">
+                                <div class="flex items-center gap-2">
+                                    <button id="tts-btn" onclick="speakFeedback()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl py-2 px-3 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-sm">
+                                        <i class="fa-solid fa-volume-high" id="tts-icon"></i>
+                                        <span id="tts-text">Тыңдау</span>
+                                    </button>
+                                    <div id="tts-loader" class="hidden w-5 h-5 border-2 border-slate-300 border-t-emerald-600 rounded-full animate-spin"></div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <!-- Көшіру батырмасы -->
+                                    <button id="copy-btn" onclick="copyResultSummary()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl py-2 px-3 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-sm" title="Оқушыға жіберу үшін нәтижелерді көшіру">
+                                        <i class="fa-solid fa-copy"></i>
+                                        <span>Көшіру</span>
+                                    </button>
+                                    <!-- Есепті жүктеп алу батырмасы -->
+                                    <button id="download-report-btn" onclick="downloadResultReport()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white rounded-xl py-2 px-3 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-sm" title="Тексеріс нәтижесін есеп файл ретінде жүктеу">
+                                        <i class="fa-solid fa-file-arrow-down"></i>
+                                        <span>Жүктеп алу</span>
+                                    </button>
+                                </div>
+                                <audio id="feedback-audio" class="hidden"></audio>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Табы (Интерактивті мәтін / Бағалау критерийлері / Ұстаз хаты) -->
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                        <div class="flex border-b border-slate-200 bg-slate-50">
+                            <button onclick="switchTab('tab-annotated')" id="btn-tab-annotated" class="flex-1 py-3 px-4 text-sm font-semibold border-b-2 border-amber-600 text-amber-700 transition-colors">
+                                <i class="fa-solid fa-file-signature mr-1.5"></i>
+                                Талданған мәтін
+                            </button>
+                            <button onclick="switchTab('tab-criteria')" id="btn-tab-criteria" class="flex-1 py-3 px-4 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-colors">
+                                <i class="fa-solid fa-chart-bar mr-1.5"></i>
+                                Бағалау критерийлері
+                            </button>
+                            <button onclick="switchTab('tab-teacher')" id="btn-tab-teacher" class="flex-1 py-3 px-4 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-colors">
+                                <i class="fa-solid fa-heart mr-1.5"></i>
+                                Ұстаз хаты
+                            </button>
+                        </div>
+
+                        <!-- Таб мазмұны: 1. Талданған мәтін (қателермен жұмыс) -->
+                        <div id="tab-annotated" class="p-6 space-y-4">
+                            <div class="bg-amber-50/50 border border-amber-100 rounded-xl p-3 text-xs text-amber-900 flex items-start gap-2.5">
+                                <i class="fa-solid fa-circle-info text-amber-700 mt-0.5"></i>
+                                <span>
+                                    Мәтіндегі асты сызылған <strong>қате сөздердің немесе сөйлемдердің үстінен басып</strong>, ұстаздың түзету кеңесін және түсініктемесін қараңыз.
+                                </span>
+                            </div>
+
+                            <!-- Қателердің түстері бойынша аңыздама (Legend) -->
+                            <div class="flex flex-wrap gap-3 text-xs font-semibold py-1">
+                                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-50 text-amber-800 border-b-2 border-amber-400">
+                                    <span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span> Стилистика
+                                </span>
+                                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-red-50 text-red-800 border-b-2 border-red-400">
+                                    <span class="w-1.5 h-1.5 bg-red-400 rounded-full"></span> Орфография
+                                </span>
+                                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-blue-50 text-blue-800 border-b-2 border-blue-400">
+                                    <span class="w-1.5 h-1.5 bg-blue-400 rounded-full"></span> Пунктуация
+                                </span>
+                                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-purple-50 text-purple-800 border-b-2 border-purple-400">
+                                    <span class="w-1.5 h-1.5 bg-purple-400 rounded-full"></span> Құрылым/Логика
+                                </span>
+                            </div>
+
+                            <!-- Интерактивті мәтін көрсетілетін аймақ -->
+                            <div id="essay-annotated-content" class="text-slate-800 leading-relaxed text-sm p-4 bg-slate-50 border border-slate-200/60 rounded-xl whitespace-pre-wrap min-h-[250px] relative">
+                                <!-- Интерактивті эссе осы жерге жүктеледі -->
+                            </div>
+
+                            <!-- Интерактивті Қате Түсіндіру Карточкасы (Interactive Overlay/Sidebar) -->
+                            <div id="error-detail-card" class="hidden bg-slate-950 text-white rounded-xl p-4 shadow-lg border border-slate-800 transform transition-all duration-300">
+                                <div class="flex justify-between items-start">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider" id="err-badge">Стилистика</span>
+                                    <button onclick="closeErrorCard()" class="text-slate-400 hover:text-white transition-colors">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                                <div class="mt-3 space-y-2">
+                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                        <div>
+                                            <p class="text-slate-400">Түпнұсқа сөз:</p>
+                                            <p class="font-bold line-through text-red-300" id="err-original">бірақ менің ойымша</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-emerald-400">Ұсынылған нұсқа:</p>
+                                            <p class="font-bold text-emerald-300" id="err-suggestion">Менің пайымдауымша,</p>
+                                        </div>
+                                    </div>
+                                    <div class="pt-2 border-t border-slate-800">
+                                        <p class="text-xs text-slate-400">Ұстаздың түсіндірмесі:</p>
+                                        <p class="text-sm text-slate-200 mt-1 italic" id="err-explanation">Бұл сөз ауызекі сөйлеу стиліне бейім...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab мазмұны: 2. Бағалау критерийлері -->
+                        <div id="tab-criteria" class="hidden p-6 space-y-4">
+                            <h3 class="serif-title text-lg font-bold text-slate-900 border-b border-slate-100 pb-2">Әдістемелік Бағалау Рубрикасы</h3>
+                            
+                            <div class="space-y-4" id="criteria-list-container">
+                                <!-- Осы жерге 5 критерий динамикалық түрде орналастырылады -->
+                            </div>
+                        </div>
+
+                        <!-- Tab мазмұны: 3. Ұстаздың ақыл-кеңесі (Хат) -->
+                        <div id="tab-teacher" class="hidden p-6 space-y-6">
+                            <div class="border-l-4 border-amber-600 pl-4 space-y-2">
+                                <h3 class="serif-title text-xl font-bold italic text-slate-900">«Ұстаздың жылы лебізі»</h3>
+                                <p class="text-xs text-slate-500 font-medium">Шәкірттің шығармашылық қабілетін қолдау мен дұрыс жол көрсету хаты</p>
+                            </div>
+                            
+                            <!-- Ұстаздың хаты мәтіні -->
+                            <div id="teacher-comment-text" class="text-slate-700 leading-relaxed text-sm bg-slate-50 border border-slate-200/60 p-5 rounded-xl whitespace-pre-wrap italic">
+                                <!-- AI хаты -->
+                            </div>
+
+                            <!-- Күшті және әлсіз тұстары (Бағдаршам) -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="bg-emerald-50/60 border border-emerald-100 rounded-xl p-4 space-y-2">
+                                    <h4 class="text-xs font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        Сәтті шыққан тұстары
+                                    </h4>
+                                    <ul class="text-xs text-slate-700 space-y-1.5 list-disc pl-4" id="strengths-list">
+                                        <!-- Сәтті тұстары -->
+                                    </ul>
+                                </div>
+                                <div class="bg-rose-50/60 border border-rose-100 rounded-xl p-4 space-y-2">
+                                    <h4 class="text-xs font-bold text-rose-800 uppercase tracking-wider flex items-center gap-1.5">
+                                        <i class="fa-solid fa-circle-exclamation"></i>
+                                        Жақсартуды талап ететін тұстары
+                                    </h4>
+                                    <ul class="text-xs text-slate-700 space-y-1.5 list-disc pl-4" id="weaknesses-list">
+                                        <!-- Түзетілетін тұстары -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Төменгі деңгей (Footer) -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-500 font-medium">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>© 2026 ЭССЕНІ ТАЛДАУ ЖӘНЕ БАҒАЛАУ ГЕНЕРАТОРЫ – Оқушыларды бағалаудың инновациялық педагогикалық құралы.</p>
+            <p class="mt-1 text-slate-400">Ұлттық педагогика мен жасанды интеллекттің бірлігі.</p>
+        </div>
+    </footer>
+
+    <!-- Жүйелік сценарийлер мен деректер жиыны -->
+    <script>
+        // Дайын эссе үлгілері
+        const sampleEssays = {
+            topic1: {
+                title: "Ана тілі – ұлттық қазына",
+                text: "Менің ойымша ана тілі ол өте маңызды зат. Біз өз тілімізде сөйлеу керекпіз өйткені ол біздің анамыз сияқты. Қазіргі кезде көп адамдар орысша сөйлейді бұл өте жаман нәрсе деп ойлаймын. Тіл болмаса ұлт та болмайды дейді ғой біреулер. Сондықтан тілімізді қорғау керекпіз. Көптеген жастар қазақша білмейді соларға ұрысу керек сияқты. Қорытындылап айтқанда ана тілімізді ұмытпайық достар."
+            },
+            topic2: {
+                title: "Абайдың қара сөздеріндегі адамгершілік мәселесі",
+                text: "Абай Құнанбаев өзінің қара сөздерінде адамгершілік пен білім мәселелерін өте көп қозғаған. Атап айтсақ, «әсемпаз болма әрнеге» деп, жастарды білімге шақырады. Отыз сегізінші қара сөзінде ол «Күллі адам баласын қор қылатын үш нәрсе бар. Олар: надандық, еріншектік және залымдық» дейді. Меніңше бұл қазір де өте актуалды болып табылады. Бірақ адамдар қазір материалдық нәрселерге көбірек мән беретін сияқты болып көрінеді. Біз Абайдың мұрасын тереңірек оқуымыз қажет деп санаймын."
+            },
+            topic3: {
+                title: "Жасанды интеллекттің адамзатқа пайдасы мен зияны",
+                text: "Қазіргі технологиялық заманда жасанды интеллект (ЖИ) біздің өмірімізге қарқынды енуде. ЖИ медицина, білім беру және экономика салаларында зор мүмкіндіктер ашуда. Ол адамзаттың күнделікті ауыр жұмыстарын жеңілдетіп, ақпараттарды секунд ішінде өңдеуге мүмкіндік береді. Дегенмен, бұл құбылыстың екінші жағы да бар. Технология дамыған сайын көптеген мамандықтар жойылып, адамдар жұмыссыз қалу қаупі бар. Оған қоса, ЖИ дамыған сайын адамның шығармашылық ойлау қабілеті мен сыни көзқарасы төмендеп бара жатқандай сезіледі. Қорытындылай келе, технологиялық жетістіктерді өз пайдамызға қолдана отырып, адами құндылықтар мен бақылауды ешқашан ұмытпағанымыз абзал."
+            }
+        };
+
+        // Оқиғаларды тіркеу және алғашқы жүктеу
+        window.onload = function() {
+            // Бастапқы мәнді жүктеу (Topic 1 таңдалған)
+            handleTopicSelectChange();
+            
+            // Мәтін өзгерген кезде сөз санын есептеу
+            const inputArea = document.getElementById('essay-text-input');
+            inputArea.addEventListener('input', updateWordCount);
+            updateWordCount();
+        };
+
+        // Тақырып өзгерген кезде сәйкес мәтінді жүктеу
+        function handleTopicSelectChange() {
+            const select = document.getElementById('essay-topic-select');
+            const customInput = document.getElementById('custom-topic-input');
+            const inputArea = document.getElementById('essay-text-input');
+
+            if (select.value === 'custom') {
+                customInput.classList.remove('hidden');
+                inputArea.value = '';
+            } else {
+                customInput.classList.add('hidden');
+                inputArea.value = sampleEssays[select.value].text;
+            }
+            updateWordCount();
+        }
+
+        // Сөз санын есептеу
+        function updateWordCount() {
+            const text = document.getElementById('essay-text-input').value.trim();
+            const count = text ? text.split(/\s+/).length : 0;
+            document.getElementById('word-count').innerText = `Сөз саны: ${count}`;
+        }
+
+        // Мәтінді тазалау
+        function clearText() {
+            document.getElementById('essay-text-input').value = '';
+            updateWordCount();
+        }
+
+        // Оқушының файлдан жіберген жұмысын бағдарламаға жүктеу (Word .docx және .txt қолдауы бар)
+        function uploadEssayFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const fileName = file.name.toLowerCase();
+
+            // Word .docx файлын өңдеу логикасы
+            if (fileName.endsWith('.docx')) {
+                showToast("Word құжатын өңдеу басталды...", "info");
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const arrayBuffer = e.target.result;
+                    
+                    // Mammoth арқылы docx файлындағы таза мәтінді шығарып алу
+                    mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+                        .then(function(result) {
+                            const extractedText = result.value; // Word-тан алынған таза мәтін
+                            if (extractedText && extractedText.trim()) {
+                                document.getElementById('essay-text-input').value = extractedText;
+                                updateWordCount();
+                                showToast("Оқушының Word жұмысы файлдан сәтті жүктелді!", "success");
+                            } else {
+                                showToast("Word файлы бос немесе мәтінді анықтау мүмкін болмады.", "error");
+                            }
+                        })
+                        .catch(function(err) {
+                            console.error(err);
+                            showToast("Word файлын оқу кезінде қате орын алды. Құжаттың бүлінбегенін тексеріңіз.", "error");
+                        });
+                };
+                reader.onerror = function() {
+                    showToast("Файлды оқу сәтсіз аяқталды.", "error");
+                };
+                reader.readAsArrayBuffer(file);
+            } 
+            // Қарапайым мәтіндік .txt файлын өңдеу
+            else if (fileName.endsWith('.txt')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('essay-text-input').value = e.target.result;
+                    updateWordCount();
+                    showToast("Оқушының жұмысы мәтіндік файлдан сәтті жүктелді!", "success");
+                };
+                reader.onerror = function() {
+                    showToast("Файлды оқу кезінде қате орын алды.", "error");
+                };
+                reader.readAsText(file);
+            } 
+            // Қолдау көрсетілмейтін формат болса
+            else {
+                showToast("Тек қана .docx және .txt форматындағы файлдарды жүктеуге болады.", "error");
+            }
+        }
+
+        // Эссе бағалау қорытындысын алмасу буферіне көшіру (КӨШІРУ батырмасы)
+        function copyResultSummary() {
+            if (!latestTeacherComment) {
+                showToast("Көшіру үшін алдымен эссені тексеріңіз.", "info");
+                return;
+            }
+            
+            let summaryText = `📝 ЭССЕНІ ТАЛДАУ ЖӘНЕ БАҒАЛАУ ҚОРЫТЫНДЫСЫ\n`;
+            summaryText += `==================================================\n`;
+            summaryText += `👩‍🏫 Тексерген ұстаз: Жазира Нұрбекқызы\n`;
+            summaryText += `📊 Жалпы ұпай: ${document.getElementById('badge-score').innerText.replace('/100', '')}/100 (${document.getElementById('badge-score-ring').innerText})\n`;
+            summaryText += `⚠️ Табылған қателер саны: ${document.getElementById('badge-errors').innerText}\n\n`;
+            
+            summaryText += `✉️ ҰСТАЗДЫҢ ЖЫЛЫ ЛЕБІЗІ:\n"${latestTeacherComment}"\n\n`;
+            
+            summaryText += `🌟 СӘТТІ ШЫҚҚАН ТҰСТАРЫ:\n`;
+            const strengths = document.getElementById('strengths-list').querySelectorAll('li');
+            strengths.forEach((li, idx) => {
+                summaryText += `${idx + 1}. ${li.innerText}\n`;
+            });
+            
+            summaryText += `\n🛠️ ЖАҚСАРТУДЫ ҚАЖЕТ ЕТЕТІН ТҰСТАРЫ:\n`;
+            const weaknesses = document.getElementById('weaknesses-list').querySelectorAll('li');
+            weaknesses.forEach((li, idx) => {
+                summaryText += `${idx + 1}. ${li.innerText}\n`;
+            });
+            
+            summaryText += `==================================================\n`;
+            summaryText += `«Эссені талдау және бағалау генераторы» арқылы жасалды.`;
+
+            // Тікелей iframe-де жұмыс істейтін баламалы көшіру әдісі
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = summaryText;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast("Эссе қорытындысы алмасу буферіне сәтті көшірілді! Оқушыға жібере аласыз.", "success");
+                } else {
+                    throw new Error("Көшіру сәтсіз аяқталды");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Көшіру мүмкін болмады, мәтінді қолмен таңдап көшіріңіз.", "error");
+            }
+            document.body.removeChild(tempTextArea);
+        }
+
+        // Тексеріс нәтижесінің толық есебін жүктеп алу (ЖҮКТЕП АЛУ батырмасы)
+        function downloadResultReport() {
+            if (!latestTeacherComment) {
+                showToast("Жүктеп алу үшін алдымен эссені тексеріңіз.", "info");
+                return;
+            }
+            
+            let summaryText = `==================================================\n`;
+            summaryText += `     ЭССЕНІ ТАЛДАУ ЖӘНЕ БАҒАЛАУ ҚОРЫТЫНДЫСЫ\n`;
+            summaryText += `==================================================\n\n`;
+            summaryText += `Тексерген ұстаз: Жазира Нұрбекқызы\n`;
+            summaryText += `Жалпы ұпай: ${document.getElementById('badge-score').innerText.replace('/100', '')}/100\n`;
+            summaryText += `Баға деңгейі: ${document.getElementById('badge-score-ring').innerText}\n`;
+            summaryText += `Қателер саны: ${document.getElementById('badge-errors').innerText}\n\n`;
+            
+            summaryText += `--- ҰСТАЗДЫҢ ХАТЫ ---\n`;
+            summaryText += `"${latestTeacherComment}"\n\n`;
+            
+            summaryText += `--- СӘТТІ ШЫҚҚАН ТҰСТАРЫ ---\n`;
+            const strengths = document.getElementById('strengths-list').querySelectorAll('li');
+            strengths.forEach((li, idx) => {
+                summaryText += `- ${li.innerText}\n`;
+            });
+            
+            summaryText += `\n--- ЖАҚСАРТУДЫ ҚАЖЕТ ЕТЕТІН ТҰСТАРЫ ---\n`;
+            const weaknesses = document.getElementById('weaknesses-list').querySelectorAll('li');
+            weaknesses.forEach((li, idx) => {
+                summaryText += `- ${li.innerText}\n`;
+            });
+            
+            summaryText += `\n==================================================\n`;
+            summaryText += `«Эссені талдау және бағалау генераторы» арқылы әзірленді.\n`;
+
+            const blob = new Blob([summaryText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `esse_bagalau_esebi.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("Бағалау есеп файлы сәтті жүктелді!", "success");
+        }
+
+        // Табтарды ауыстыру функциясы
+        function switchTab(tabId) {
+            const tabs = ['tab-annotated', 'tab-criteria', 'tab-teacher'];
+            tabs.forEach(t => {
+                const element = document.getElementById(t);
+                const button = document.getElementById(`btn-${t}`);
+                if (t === tabId) {
+                    element.classList.remove('hidden');
+                    button.className = "flex-1 py-3 px-4 text-sm font-semibold border-b-2 border-amber-600 text-amber-700 transition-colors";
+                } else {
+                    element.classList.add('hidden');
+                    button.className = "flex-1 py-3 px-4 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-colors";
+                }
+            });
+            // Егер таб ауысса, қате карточкасын жабу
+            closeErrorCard();
+        }
+
+        // Қате туралы карточканы жабу
+        function closeErrorCard() {
+            const card = document.getElementById('error-detail-card');
+            card.classList.add('hidden');
+        }
+
+        // Сақталған соңғы бағаланған ұстаздың хаты (TTS аудио үшін қажет)
+        let latestTeacherComment = "";
+
+        // Эссені бағалау және Gemini API қосу
+        async function runAnalysis() {
+            const textInput = document.getElementById('essay-text-input').value.trim();
+            const topicSelect = document.getElementById('essay-topic-select');
+            let topic = "";
+
+            if (topicSelect.value === 'custom') {
+                topic = document.getElementById('custom-topic-input').value.trim() || "Еркін тақырып";
+            } else {
+                topic = sampleEssays[topicSelect.value].title;
+            }
+
+            if (!textInput) {
+                showToast("Айналайын, алдымен эссе мәтінін жазыңыз немесе дайын үлгіні таңдаңыз.", "info");
+                return;
+            }
+
+            // Экранды жүктелу күйіне ауыстыру
+            document.getElementById('result-placeholder').classList.add('hidden');
+            document.getElementById('result-display').classList.add('hidden');
+            const loadingScreen = document.getElementById('result-loading');
+            loadingScreen.classList.remove('hidden');
+
+            // Жүктеу қадамдарын кезең-кезеңімен көрсету
+            updateLoadingStep(1, "active");
+            updateLoadingStep(2, "pending");
+            updateLoadingStep(3, "pending");
+            updateLoadingStep(4, "pending");
+
+            try {
+                setTimeout(() => updateLoadingStep(2, "active"), 1500);
+                setTimeout(() => updateLoadingStep(3, "active"), 3500);
+                setTimeout(() => updateLoadingStep(4, "active"), 5500);
+
+                // Gemini API жүктеу
+                const apiKey = ""; // Canvas-те бос болып қалады, автоматты түрде реттеледі.
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+                // Бағалау критерийлерін жинау
+                const hasStructure = document.getElementById('crit-structure').checked;
+                const hasArguments = document.getElementById('crit-arguments').checked;
+                const hasStyle = document.getElementById('crit-style').checked;
+                const hasGrammar = document.getElementById('crit-grammar').checked;
+
+                // Педагогикалық талдау сұранысын құрастыру (System Prompt + User Input)
+                const systemPrompt = `
+                Сіз — қазақ тілі мен әдебиеті пәнінен 30 жылдық тәжірибесі бар, Қазақстанның еңбек сіңірген ардагер ұстазы Жазира Нұрбекқызысыз. Сіздің міндетіңіз — оқушылар жазған эсселерді мұқият талдап, олардың қателерін көрсетіп, одан әрі жақсаруына ынталандырушы, жылы және бағыт-бағдар беретін бағалау жасау.
+
+                Сіз эссені келесі 5 критерий бойынша бағалайсыз:
+                1. Тақырыптың мазмұндылығы мен ашылуы (макс 20 ұпай)
+                2. Құрылым мен жүйелілік (Кіріспе, негізгі бөлім, қорытынды) (макс 20 ұпай)
+                3. Дәйектемелер мен аргументтердин нақтылығы (макс 20 ұпай)
+                4. Тілдік нормалар мен стилистика (Сөздік қордың байлығы) (макс 20 ұпай)
+                5. Орографиялық және пунктуациялық сауаттылық (макс 20 ұпай)
+
+                Талданған мәтіндегі Стилистикалық, Орфографиялық, Пунктуациялық немесе Құрылымдық қателердің әрқайсысын тауып, оны БҮЛЖІТПЕЙ келесі HTML тегіне орап көрсетіңіз. Сонда оқушы оны басып, кеңесті оқи алады:
+                <span class="error-node cursor-pointer border-b-2 font-medium px-1 mx-0.5 rounded transition-all duration-200 cursor-help" data-type="style|grammar|punctuation|logic" data-explanation="Осы жердегі қате неліктен қате екенін түсіндіру және жылы педагогикалық кеңес" data-suggestion="Ұсынылған дұрыс сөз немесе сөйлем">Қате жазылған сөз немесе сөйлем бөлігі</span>
+
+                Қателердің түрі сәйкесінше болуы тиіс:
+                - "style" : Стилистикалық қателер (ауызекі сөздер, орынсыз қайталанулар, қарапайым тіркестер) - сары түс.
+                - "grammar" : Орфографиялық қателер (әріптік қателер) - қызыл түс.
+                - "punctuation" : Пунктуациялық қателер (үтір, сызықша т.б. жетіспеуі немесе артық болуы) - көк түс.
+                - "logic" : Құрылым немесе логикалық жүйесіздіктер - күлгін түс.
+
+                Жауапты қатаң түрде JSON форматында ғана қайтарыңыз (басқа ештеңе жазбаңыз). Схемасы:
+                {
+                  "overallScore": сан (0-100),
+                  "overallGradeLetter": "A+", "A-", "B", "C" сияқты әріптік баға,
+                  "highlightedHtml": "Қателері <span class='error-node'...>оралған</span> толық эссе мәтіні",
+                  "criteriaBreakdown": [
+                     { "name": "Тақырыптың мазмұндылығы", "score": сан, "max": 20, "feedback": "Түсіндірме" },
+                     { "name": "Құрылым мен жүйелілік", "score": сан, "max": 20, "feedback": "Түсіндірме" },
+                     { "name": "Аргументация мен дәлелдер", "score": san, "max": 20, "feedback": "Түсіндірме" },
+                     { "name": "Тілдік нормалар мен стилистика", "score": san, "max": 20, "feedback": "Түсіндірме" },
+                     { "name": "Сауаттылық (Орфография мен Пунктуация)", "score": san, "max": 20, "feedback": "Түсіндірме" }
+                  ],
+                  "teacherComment": "Оқушыға жылы, демеу беретін, Ахмет Байтұрсынұлы сияқты ұлы тұлғалардың сөздерін мысалға ала отырып жазылған жылы ұстаздық хат. Соңында Жазира Нұрбекқызы деп қол қойыңыз.",
+                  "strengths": ["Күшті жақтарының тізімі (қысқаша 3-4 тармақ)"],
+                  "weaknesses": ["Жақсартуды қажет ететін тұстары (қысқаша 3-4 тармақ)"]
+                }
+                `;
+
+                const userPrompt = `
+                Эссе тақырыбы: "${topic}"
+                Оқушының мәтіні:
+                "${textInput}"
+
+                Бағалау баптаулары:
+                - Құрылым тексеру: ${hasStructure ? "ИӘ" : "ЖОҚ"}
+                - Аргументтерді тексеру: ${hasArguments ? "ИӘ" : "ЖОҚ"}
+                - Стилистиканы тексеру: ${hasStyle ? "ИӘ" : "ЖОҚ"}
+                - Грамматиканы тексеру: ${hasGrammar ? "ИӘ" : "ЖОҚ"}
+                `;
+
+                const payload = {
+                    contents: [{ parts: [{ text: userPrompt }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json"
+                    },
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error("API сұранысында қате орын алды.");
+                }
+
+                const result = await response.json();
+                const jsonText = result.candidates[0].content.parts[0].text;
+                const analysisResult = JSON.parse(jsonText);
+
+                // Нәтижені өңдеу және экранға шығару
+                displayAnalysisResults(analysisResult);
+
+            } catch (error) {
+                console.error(error);
+                showToast("Кешіріңіз, эссені талдау кезінде күтпеген қате болды. Қайта көріңіз.", "error");
+                loadingScreen.classList.add('hidden');
+                document.getElementById('result-placeholder').classList.remove('hidden');
+            }
+        }
+
+        // Жүктеу процесінің индикаторын жаңарту
+        function updateLoadingStep(stepNum, status) {
+            const icon = document.getElementById(`step-${stepNum}-icon`);
+            const text = document.getElementById(`step-${stepNum}-text`);
+
+            if (status === "active") {
+                icon.className = "fa-solid fa-spinner text-amber-600 animate-spin";
+                text.className = "text-slate-950 font-semibold";
+                document.getElementById('loading-status').innerText = text.innerText + "...";
+            } else if (status === "completed") {
+                icon.className = "fa-solid fa-circle-check text-emerald-500";
+                text.className = "text-slate-400 line-through";
+            } else {
+                icon.className = "fa-solid fa-circle-notch text-slate-300";
+                text.className = "text-slate-500";
+            }
+        }
+
+        // Бағалау нәтижесін UI-де бейнелеу
+        function displayAnalysisResults(data) {
+            // Жүктелу күйін жабу
+            document.getElementById('result-loading').classList.add('hidden');
+            document.getElementById('result-display').classList.remove('hidden');
+
+            // 1. Жоғарғы басты көрсеткіштер
+            document.getElementById('badge-score').innerHTML = `${data.overallScore}<span class="text-base text-slate-400 font-normal">/100</span>`;
+            document.getElementById('badge-score-ring').innerText = data.overallGradeLetter || "A";
+
+            // Мәтіндегі қателік тегтерін санау
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = data.highlightedHtml;
+            const errorNodes = tempDiv.querySelectorAll('.error-node');
+            document.getElementById('badge-errors').innerText = errorNodes.length;
+
+            // Сақталған ұстаздың хаты
+            latestTeacherComment = data.teacherComment;
+
+            // 2. Интерактивті мәтінді орналастыру және қателердің түстерін реттеу
+            const annotatedContainer = document.getElementById('essay-annotated-content');
+            annotatedContainer.innerHTML = data.highlightedHtml;
+
+            // Барлық қате түйіндерін тауып, тиісті CSS және Click тыңдаушыларын орнату
+            const nodes = annotatedContainer.querySelectorAll('.error-node');
+            nodes.forEach(node => {
+                const type = node.getAttribute('data-type') || 'style';
+                
+                // Түріне байланысты стильдерді беру
+                if (type === 'style') {
+                    node.className = "error-node cursor-pointer border-b-2 border-amber-400 bg-amber-50/70 hover:bg-amber-100/80 text-amber-950 px-1 py-0.5 rounded transition-all duration-200 inline";
+                } else if (type === 'grammar') {
+                    node.className = "error-node cursor-pointer border-b-2 border-rose-400 bg-rose-50/70 hover:bg-rose-100/80 text-rose-950 px-1 py-0.5 rounded transition-all duration-200 inline";
+                } else if (type === 'punctuation') {
+                    node.className = "error-node cursor-pointer border-b-2 border-blue-400 bg-blue-50/70 hover:bg-blue-100/80 text-blue-950 px-1 py-0.5 rounded transition-all duration-200 inline";
+                } else if (type === 'logic') {
+                    node.className = "error-node cursor-pointer border-b-2 border-purple-400 bg-purple-50/70 hover:bg-purple-100/80 text-purple-950 px-1 py-0.5 rounded transition-all duration-200 inline";
+                }
+
+                // Басу оқиғасын өңдеу
+                node.onclick = function(e) {
+                    e.stopPropagation();
+                    showErrorDetail(node);
+                };
+            });
+
+            // 3. Бағалау критерийлерінің тізімін құрастыру
+            const criteriaContainer = document.getElementById('criteria-list-container');
+            criteriaContainer.innerHTML = '';
+            
+            data.criteriaBreakdown.forEach(item => {
+                const percentage = (item.score / item.max) * 100;
+                let colorClass = "bg-amber-500";
+                if (percentage >= 85) colorClass = "bg-emerald-500";
+                else if (percentage >= 70) colorClass = "bg-amber-500";
+                else colorClass = "bg-rose-500";
+
+                const critHtml = `
+                    <div class="bg-slate-50 border border-slate-200/60 rounded-xl p-4 space-y-2">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="font-semibold text-slate-800">${item.name}</span>
+                            <span class="font-bold text-slate-900">${item.score} / ${item.max}</span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div class="${colorClass} h-full transition-all duration-500" style="width: ${percentage}%"></div>
+                        </div>
+                        <p class="text-xs text-slate-500 leading-relaxed italic mt-1">« ${item.feedback} »</p>
+                    </div>
+                `;
+                criteriaContainer.innerHTML += critHtml;
+            });
+
+            // 4. Ұстаз хаты мен сәтті/әлсіз тұстары
+            document.getElementById('teacher-comment-text').innerText = data.teacherComment;
+
+            const strengthsContainer = document.getElementById('strengths-list');
+            strengthsContainer.innerHTML = '';
+            data.strengths.forEach(str => {
+                strengthsContainer.innerHTML += `<li>${str}</li>`;
+            });
+
+            const weaknessesContainer = document.getElementById('weaknesses-list');
+            weaknessesContainer.innerHTML = '';
+            data.weaknesses.forEach(weak => {
+                weaknessesContainer.innerHTML += `<li>${weak}</li>`;
+            });
+
+            // Әрқашан бірінші табқа қайта орнату
+            switchTab('tab-annotated');
+            showToast("Эссе сәтті талданды! Талданған мәтіннен қателерді тексеріңіз.", "success");
+        }
+
+        // Қате сөзді басқанда ақпарат карточкасын көрсету
+        function showErrorDetail(element) {
+            const card = document.getElementById('error-detail-card');
+            const badge = document.getElementById('err-badge');
+            const original = document.getElementById('err-original');
+            const suggestion = document.getElementById('err-suggestion');
+            const explanation = document.getElementById('err-explanation');
+
+            const type = element.getAttribute('data-type');
+            const expText = element.getAttribute('data-explanation');
+            const sugText = element.getAttribute('data-suggestion');
+            const origText = element.innerText;
+
+            // Картаны көрсету
+            card.classList.remove('hidden');
+
+            // Ақпаратты орналастыру
+            original.innerText = origText;
+            suggestion.innerText = sugText || "Арнайы балама көрсетілмеген, контекстке мән беріңіз.";
+            explanation.innerText = expText || "Қате тұсын қайта қарап шығуды ұсынамын.";
+
+            // Түріне қарай бейджик баптауы
+            if (type === 'style') {
+                badge.innerText = "Стилистикалық кеңес";
+                badge.className = "inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-amber-500 text-slate-950";
+            } else if (type === 'grammar') {
+                badge.innerText = "Орфографиялық бағыт";
+                badge.className = "inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-rose-600 text-white";
+            } else if (type === 'punctuation') {
+                badge.innerText = "Тыныс белгі ережесі";
+                badge.className = "inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-blue-600 text-white";
+            } else if (type === 'logic') {
+                badge.innerText = "Логика мен құрылым";
+                badge.className = "inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-purple-600 text-white";
+            }
+
+            // Талданған мәтін астына бекіту
+            element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Көмекші функциялар: Base64-ті ArrayBuffer-ге айналдыру
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        // PCM 16-бит сигналын WAV форматына орау
+        function pcmToWav(pcm16, sampleRate) {
+            const buffer = new ArrayBuffer(44 + pcm16.length * 2);
+            const view = new DataView(buffer);
+
+            // RIFF сәйкестендіргіші
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcm16.length * 2, true);
+            writeString(view, 8, 'WAVE');
+
+            // Тізім ақпараты (Format chunk)
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true); // Chunk size
+            view.setUint16(20, 1, true); // Audio format (1 = PCM)
+            view.setUint16(22, 1, true); // Channels (1 = Mono)
+            view.setUint32(24, sampleRate, true); // Sample rate
+            view.setUint32(28, sampleRate * 2, true); // Byte rate
+            view.setUint16(32, 2, true); // Block align (Channels * bytes_per_sample)
+            view.setUint16(34, 16, true); // Bits per sample (16 bit)
+
+            // Деректерді жазу (Data chunk)
+            writeString(view, 36, 'data');
+            view.setUint32(40, pcm16.length * 2, true);
+
+            let offset = 44;
+            for (let i = 0; i < pcm16.length; i++, offset += 2) {
+                view.setInt16(offset, pcm16[i], true);
+            }
+
+            return new Blob([view], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        // Ұстаз пікірін дауысқа айналдыру (Gemini Audio TTS)
+        async function speakFeedback() {
+            if (!latestTeacherComment) {
+                showToast("Алдымен эссені бағалаңыз.", "info");
+                return;
+            }
+
+            const ttsBtn = document.getElementById('tts-btn');
+            const ttsIcon = document.getElementById('tts-icon');
+            const ttsText = document.getElementById('tts-text');
+            const ttsLoader = document.getElementById('tts-loader');
+            const audioPlayer = document.getElementById('feedback-audio');
+
+            // Егер қазір ойнап тұрса, тоқтату
+            if (!audioPlayer.paused) {
+                audioPlayer.pause();
+                ttsIcon.className = "fa-solid fa-volume-high";
+                ttsText.innerText = "Тыңдау";
+                return;
+            }
+
+            // Жүктелу индикаторы
+            ttsLoader.classList.remove('hidden');
+            ttsBtn.disabled = true;
+
+            try {
+                const apiKey = ""; // Canvas автоматты түрде қояды
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+                // Дауыс сипаттамасы мен жылы ұстаз бейнесі
+                const ttsPayload = {
+                    contents: [{
+                        parts: [{ text: `Мұғалімнің даусымен жылы, салмақты әрі мейірімді үнмен оқыңыз: ${latestTeacherComment.substring(0, 450)}` }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: {
+                                prebuiltVoiceConfig: { voiceName: "Puck" } // Warm, upbeat, female voice
+                            }
+                        }
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(ttsPayload)
+                });
+
+                if (!response.ok) {
+                    const errBody = await response.text();
+                    console.error("Gemini TTS API Error:", errBody);
+                    throw new Error("Аудио файлды алу кезінде қате шықты: " + response.statusText);
+                }
+
+                const result = await response.json();
+                console.log("Gemini TTS Response Object:", result);
+
+                if (result.error) {
+                    throw new Error(result.error.message || "API белгісіз қате қайтарды.");
+                }
+
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                
+                // Егер дауыс орнына мәтін қайтарып жіберсе
+                if (part && part.text) {
+                    console.warn("Model returned text instead of audio:", part.text);
+                    throw new Error("Модель дауыс орнына мәтін қайтарды.");
+                }
+
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioData && mimeType) {
+                    console.log("Audio data received. MIME type:", mimeType);
+                    let audioUrl;
+
+                    // Қолдау көрсетілетін аудио форматын анықтау және өңдеу
+                    if (mimeType.includes("linear16") || mimeType.includes("pcm") || mimeType.includes("L16")) {
+                        const sampleRate = parseInt(mimeType.match(/rate=(\d+)/)?.[1] || "24000", 10);
+                        const pcmData = base64ToArrayBuffer(audioData);
+                        const pcm16 = new Int16Array(pcmData);
+                        const wavBlob = pcmToWav(pcm16, sampleRate);
+                        audioUrl = URL.createObjectURL(wavBlob);
+                    } else if (mimeType.startsWith("audio/")) {
+                        // Егер дайын wav/mp3/ogg форматында келсе
+                        const binaryData = base64ToArrayBuffer(audioData);
+                        const audioBlob = new Blob([binaryData], { type: mimeType });
+                        audioUrl = URL.createObjectURL(audioBlob);
+                    } else {
+                        throw new Error("Қолдау көрсетілмейтін аудио форматы: " + mimeType);
+                    }
+
+                    audioPlayer.src = audioUrl;
+                    audioPlayer.play();
+
+                    // Түймешік күйін өзгерту
+                    ttsIcon.className = "fa-solid fa-circle-pause text-rose-500 animate-pulse";
+                    ttsText.innerText = "Тоқтату";
+
+                    audioPlayer.onended = function() {
+                        ttsIcon.className = "fa-solid fa-volume-high";
+                        ttsText.innerText = "Тыңдау";
+                    };
+                } else {
+                    if (result?.candidates?.[0]?.finishReason === "SAFETY") {
+                        throw new Error("Қауіпсіздік сүзгісінен өте алмады (SAFETY block).");
+                    }
+                    throw new Error("Аудио деректер құрылымы бос немесе бұзылған.");
+                }
+
+            } catch (error) {
+                console.error("TTS Error Stack:", error);
+                showToast(`Дауыс синтезі кезінде қате орын алды: ${error.message}`, "error");
+            } finally {
+                ttsLoader.classList.add('hidden');
+                ttsBtn.disabled = false;
+            }
+        }
+
+        // Жүйелік хабарлама шығару (Toast)
+        function showToast(message, type = "info") {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg border text-sm font-semibold transition-all duration-300 transform translate-y-10 opacity-0`;
+            
+            if (type === "success") {
+                toast.className += " bg-emerald-50 border-emerald-200 text-emerald-800";
+                toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> ${message}`;
+            } else if (type === "error") {
+                toast.className += " bg-rose-50 border-rose-200 text-rose-800";
+                toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-600"></i> ${message}`;
+            } else {
+                toast.className += " bg-indigo-50 border-indigo-200 text-indigo-800";
+                toast.innerHTML = `<i class="fa-solid fa-circle-info text-indigo-600"></i> ${message}`;
+            }
+
+            document.body.appendChild(toast);
+            
+            // Анимациялық түрде шығару
+            setTimeout(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            }, 100);
+
+            // 4 секундтан кейін жою
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
